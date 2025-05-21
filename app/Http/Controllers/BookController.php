@@ -24,7 +24,7 @@ class BookController extends Controller
         return response()->json([
             'success' => true,
             'data' => $book
-        ], 201); // 201 = created
+        ], 201);
     }
 
     // Show one book by ID, include genre and author

@@ -20,7 +20,13 @@ class GenreController extends Controller
     // Create a new genre
     public function store(Request $request)
     {
-        $genre = Genre::create($request->all());
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $genre = Genre::create($request->only(['name', 'description']));
+
         return response()->json([
             'success' => true,
             'data' => $genre
@@ -40,8 +46,14 @@ class GenreController extends Controller
     // Update genre by ID
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
         $genre = Genre::findOrFail($id);
-        $genre->update($request->all());
+        $genre->update($request->only(['name', 'description']));
+
         return response()->json([
             'success' => true,
             'data' => $genre
@@ -52,6 +64,7 @@ class GenreController extends Controller
     public function destroy($id)
     {
         Genre::destroy($id);
+
         return response()->json([
             'success' => true,
             'message' => 'Genre deleted'

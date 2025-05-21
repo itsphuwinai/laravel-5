@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class AuthorController extends Controller
 {
-    // List all authors
     public function index()
     {
         $authors = Author::all();
@@ -17,17 +16,22 @@ class AuthorController extends Controller
         ], 200);
     }
 
-    // Add a new author
     public function store(Request $request)
     {
-        $author = Author::create($request->all());
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'photo' => 'nullable|string|max:255',
+            'bio' => 'required|string',
+        ]);
+
+        $author = Author::create($request->only(['name', 'photo', 'bio']));
+
         return response()->json([
             'success' => true,
             'data' => $author
         ], 201);
     }
 
-    // Get one author by ID
     public function show($id)
     {
         $author = Author::findOrFail($id);
@@ -37,18 +41,23 @@ class AuthorController extends Controller
         ], 200);
     }
 
-    // Update author by ID
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'photo' => 'nullable|string|max:255',
+            'bio' => 'required|string',
+        ]);
+
         $author = Author::findOrFail($id);
-        $author->update($request->all());
+        $author->update($request->only(['name', 'photo', 'bio']));
+
         return response()->json([
             'success' => true,
             'data' => $author
         ], 200);
     }
 
-    // Delete author by ID
     public function destroy($id)
     {
         Author::destroy($id);
