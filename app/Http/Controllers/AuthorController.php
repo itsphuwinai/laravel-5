@@ -24,7 +24,7 @@ class AuthorController extends Controller
             'bio' => 'required|string',
         ]);
 
-        $author = Author::create($request->only(['name', 'photo', 'bio']));
+        $author = Author::create($request->only('name', 'photo', 'bio'));
 
         return response()->json([
             'success' => true,
@@ -34,7 +34,15 @@ class AuthorController extends Controller
 
     public function show($id)
     {
-        $author = Author::findOrFail($id);
+        $author = Author::find($id);
+
+        if (!$author) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Author not found.'
+            ], 404);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $author
@@ -43,14 +51,22 @@ class AuthorController extends Controller
 
     public function update(Request $request, $id)
     {
+        $author = Author::find($id);
+
+        if (!$author) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Author not found.'
+            ], 404);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'photo' => 'nullable|string|max:255',
             'bio' => 'required|string',
         ]);
 
-        $author = Author::findOrFail($id);
-        $author->update($request->only(['name', 'photo', 'bio']));
+        $author->update($request->only('name', 'photo', 'bio'));
 
         return response()->json([
             'success' => true,
@@ -60,7 +76,17 @@ class AuthorController extends Controller
 
     public function destroy($id)
     {
-        Author::destroy($id);
+        $author = Author::find($id);
+
+        if (!$author) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Author not found.'
+            ], 404);
+        }
+
+        $author->delete();
+
         return response()->json([
             'success' => true,
             'message' => 'Author deleted'

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class GenreController extends Controller
 {
-    // Get all genres
     public function index()
     {
         $genres = Genre::all();
@@ -17,7 +16,6 @@ class GenreController extends Controller
         ], 200);
     }
 
-    // Create a new genre
     public function store(Request $request)
     {
         $request->validate([
@@ -25,7 +23,7 @@ class GenreController extends Controller
             'description' => 'required|string',
         ]);
 
-        $genre = Genre::create($request->only(['name', 'description']));
+        $genre = Genre::create($request->only('name', 'description'));
 
         return response()->json([
             'success' => true,
@@ -33,26 +31,40 @@ class GenreController extends Controller
         ], 201);
     }
 
-    // Get one genre by ID
     public function show($id)
     {
-        $genre = Genre::findOrFail($id);
+        $genre = Genre::find($id);
+
+        if (!$genre) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Genre not found.'
+            ], 404);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $genre
         ], 200);
     }
 
-    // Update genre by ID
     public function update(Request $request, $id)
     {
+        $genre = Genre::find($id);
+
+        if (!$genre) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Genre not found.'
+            ], 404);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
 
-        $genre = Genre::findOrFail($id);
-        $genre->update($request->only(['name', 'description']));
+        $genre->update($request->only('name', 'description'));
 
         return response()->json([
             'success' => true,
@@ -60,10 +72,18 @@ class GenreController extends Controller
         ], 200);
     }
 
-    // Delete genre by ID
     public function destroy($id)
     {
-        Genre::destroy($id);
+        $genre = Genre::find($id);
+
+        if (!$genre) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Genre not found.'
+            ], 404);
+        }
+
+        $genre->delete();
 
         return response()->json([
             'success' => true,
